@@ -20,9 +20,19 @@ function getPkg() {
     return pkg;
 }
 
+function bump(version, build) {
+    var vArray = version.split('.');
+
+    var major = vArray[0];
+    var minor = vArray[1];
+
+    return major + '.' + minor + '.' + build;
+}
+
 var pkg = getPkg();
 var currentVersion = pkg.version;
 var buildNumber = argv.b;
+var newVersion = bump(currentVersion, buildNumber);
 
 if (!currentVersion) {
     error('Could not find the current version!');
@@ -32,8 +42,8 @@ if (!buildNumber) {
     error('Could not find the build number!');
 }
 
-console.log(chalk.blue('Updating version to ' + currentVersion + '-' + buildNumber));
-pkg.version = currentVersion + '-' + buildNumber;
+console.log(chalk.blue('Updating version to ' + newVersion));
+pkg.version = newVersion;
 
 try {
     fs.writeFileSync(path.resolve(process.cwd(), './package.json'), JSON.stringify(pkg, null, 2));
