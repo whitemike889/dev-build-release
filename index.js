@@ -1,1 +1,1 @@
-module.exports = require('./bin/npm-release');
+module.exports = require('./bin/dev-build-release');
