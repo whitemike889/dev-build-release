@@ -1,0 +1,32 @@
+{
+  "name": "dev-build-release",
+  "version": "0.0.1",
+  "description": "Simple tool to append the build number to the package.json for a development release",
+  "main": "index.js",
+  "preferGlobal": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "dev-build-release": "./bin/dev-build-release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jgodi/dev-build-release.git"
+  },
+  "keywords": [
+    "npm",
+    "release",
+    "dev"
+  ],
+  "author": "Joshua Godi <joshuagodi@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jgodi/dev-build-release/issues"
+  },
+  "homepage": "https://github.com/jgodi/dev-build-release#readme",
+  "dependencies": {
+    "chalk": "^1.1.1",
+    "yargs": "^4.1.0"
+  }
+}
