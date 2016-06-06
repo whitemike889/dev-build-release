@@ -6,4 +6,4 @@
 
 You must use `dev-build-release` in a folder with a `package.json` and a remote to push to.
 
-`dev-build-release -b BUILD_NUMBER`
+`dev-build-release -b BUILD_NUMBER -g BRANCH_NAME`

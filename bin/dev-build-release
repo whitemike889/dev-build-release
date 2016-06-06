@@ -20,6 +20,17 @@ function getPkg() {
     return pkg;
 }
 
+function bumpWithBranch(version, build, branch) {
+    var vArray = version.split('.');
+    var bArray = branch.split('/');
+
+    var major = vArray[0];
+    var minor = vArray[1];
+    var feature = bArray[bArray.length - 1];
+
+    return major + '.' + minor + '.' + build + '-' + feature + '.' + build;
+}
+
 function bump(version, build) {
     var vArray = version.split('.');
 
@@ -32,7 +43,13 @@ function bump(version, build) {
 var pkg = getPkg();
 var currentVersion = pkg.version;
 var buildNumber = argv.b;
-var newVersion = bump(currentVersion, buildNumber);
+var gitBranch = argv.g;
+var newVersion;
+if (gitBranch) {
+    newVersion = bumpWithBranch(currentVersion, buildNumber, gitBranch);
+} else {
+    newVersion = bump(currentVersion, buildNumber)
+}
 
 if (!currentVersion) {
     error('Could not find the current version!');
