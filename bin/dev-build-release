@@ -28,7 +28,7 @@ function bumpWithBranch(version, build, branch) {
     var minor = vArray[1];
     var feature = bArray[bArray.length - 1];
 
-    return major + '.' + minor + '.' + build + '-' + feature + '.' + build;
+    return major + '.' + minor + '-' + feature + '.' + build;
 }
 
 function bump(version, build) {
