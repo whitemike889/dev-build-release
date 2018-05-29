@@ -1,6 +1,6 @@
 {
   "name": "dev-build-release",
-  "version": "0.0.7",
+  "version": "0.0.127",
   "description": "Simple tool to append the build number to the package.json for a development release",
   "main": "index.js",
   "preferGlobal": true,
@@ -8,7 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "dev-build-release": "./bin/dev-build-release"
+    "dev-build-release": "./bin/dev-build-release",
+    "determine-version": "./bin/determine-version",
+    "generate-version-file": "./bin/generate-version-file"
   },
   "repository": {
     "type": "git",
@@ -27,6 +29,7 @@
   "homepage": "https://github.com/jgodi/dev-build-release#readme",
   "dependencies": {
     "chalk": "^1.1.1",
+    "git-repo-info": "^2.0.0",
     "yargs": "^4.1.0"
   }
 }

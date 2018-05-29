@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+// Example: ./node_modules/dev-build-release/bin/determine-version -p ATS_CRM/coldfusion
+
+var utils = require('./utils'),
+    gitInfo = require('git-repo-info')(),
+    argv = require('yargs').argv;
+
+var pkg = utils.getParentPackage();
+var currentVersion = pkg.version;
+var gitBranch = gitInfo.branch;
+var parentrepositories= argv.p;   // repositoriesthat depend on current repo
+var newVersion;
+
+if (!gitBranch) {
+    utils.error('ERROR: Unable to determine current branch')
+    process.exit();
+} else if (gitBranch === 'master') {
+    newVersion = currentVersion;
+} else if (gitBranch === 'development') {
+    newVersion = utils.bump(currentVersion, buildNumber);
+} else {
+    newVersion = utils.bumpWithBranch(currentVersion, 0, gitBranch) + ' - ' + utils.bumpWithBranch(currentVersion, 999999, gitBranch);
+}
+
+utils.log('=================HOW TO VERSION=================');
+if (parentRepos) {
+    utils.log('Update package.json of the following repositories to see your changes:');
+    utils.log(parentRepos.split(',').join('\n') + '\n');
+}
+utils.log('Version of ' + pkg.name + ':');
+utils.log(newVersion, 'white');
+utils.log('================================================');

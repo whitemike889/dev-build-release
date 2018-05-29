@@ -1,65 +1,36 @@
 #!/usr/bin/env node
+// Example: ./node_modules/dev-build-release/bin/dev-build-release -b ${BUILD_NUMBER} -g ${GIT_BRANCH}
 
 var path = require('path'),
     fs = require('fs'),
     argv = require('yargs').argv,
-    chalk = require('chalk');
+    utils = require('./utils');
 
-function error(msg) {
-    console.log(chalk.red(msg));
-    process.exit(-1);
-}
-
-function getPkg() {
-    var pkg;
-    try {
-        pkg = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), './package.json')));
-    } catch (e) {
-        error('Could not open the package.json!');
-    }
-    return pkg;
-}
-
-function bumpWithBranch(version, build, branch) {
-    var bArray = branch.split('/');
-    var feature = bArray[bArray.length - 1];
-
-    return version + '-' + feature + '.' + build;
-}
-
-function bump(version, build) {
-    var vArray = version.split('.');
-
-    var major = vArray[0];
-    var minor = vArray[1];
-
-    return major + '.' + minor + '.' + build;
-}
-
-var pkg = getPkg();
+var pkg = utils.getParentPackage();
 var currentVersion = pkg.version;
 var buildNumber = argv.b;
 var gitBranch = argv.g;
 var newVersion;
-if (gitBranch) {
-    newVersion = bumpWithBranch(currentVersion, buildNumber, gitBranch);
-} else {
-    newVersion = bump(currentVersion, buildNumber)
-}
 
 if (!currentVersion) {
-    error('Could not find the current version!');
+    utils.error('Could not find the current version!');
 }
 
 if (!buildNumber) {
-    error('Could not find the build number!');
+    utils.error('Could not find the build number!');
 }
 
-console.log(chalk.blue('Updating version to ' + newVersion));
+if (gitBranch) {
+    newVersion = utils.bumpWithBranch(currentVersion, buildNumber, gitBranch);
+} else {
+    newVersion = utils.bump(currentVersion, buildNumber)
+}
+
+utils.log('Updating version to ' + newVersion);
 pkg.version = newVersion;
 
 try {
     fs.writeFileSync(path.resolve(process.cwd(), './package.json'), JSON.stringify(pkg, null, 2));
 } catch (e) {
-    error('Could not write to the package.json!');
+    utils.error('Could not write to the package.json!');
 }

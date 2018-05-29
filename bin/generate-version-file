@@ -1,0 +1,113 @@
+#!/usr/bin/env node
+// Example Commands:
+// generate-version-file
+// generate-version-file -l build/
+// generate-version-file -l dist/
+
+var path = require('path'),
+    fs = require('fs'),
+    os = require('os'),
+    gitInfo = require('git-repo-info')(),
+    utils = require('./utils'),
+    parentPackage = utils.getParentPackage(),
+    argv = require('yargs').argv;
+
+function getTime() {
+    var today = new Date();
+    var options = {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric' ,
+        timeZoneName: 'short'
+    };
+    return today.toLocaleDateString('en-us', options);
+}
+
+function getBhVersionInfo() {
+    var bhVersionPkg;
+    try {
+        var bhVersionPackageJsonPath = path.resolve(process.cwd(), './node_modules/dev-build-release/package.json');
+        if (!fs.existsSync(bhVersionPackageJsonPath)) {
+            bhVersionPackageJsonPath = path.resolve(process.cwd(), './package.json');
+        }
+        bhVersionPkg = JSON.parse(fs.readFileSync(bhVersionPackageJsonPath));
+    } catch (e) {
+        utils.error('Could not open the package.json!');
+    }
+
+    return {
+        name: bhVersionPkg.name,
+        version: bhVersionPkg.version
+    }
+}
+
+function getCommitUrl(hash, package) {
+    return getRepoUrl(parentPackage) + '/' + hash;
+}
+
+function getRepoUrl(package) {
+    return (package.repository && package.repository.url) ? package.repository.url : undefined;
+}
+
+function getDependencyInfo(dependency) {
+    var info;
+    try {
+        var versionInfoPath = path.resolve(process.cwd(), './node_modules/' + dependency + '/version.json');
+        if (!fs.existsSync(versionInfoPath)) {
+            versionInfoPath = path.resolve(process.cwd(), './node_modules/' + dependency + '/package.json');
+        }
+        info = JSON.parse(fs.readFileSync(versionInfoPath));
+    } catch(e) {
+        info = 'Unable to parse version information about ' + dependency;
+    }
+    return info;
+}
+
+function getDependencies(package) {
+    var allDependencies = {};
+    for (var dependency in package.dependencies) {
+        allDependencies[dependency] = getDependencyInfo(dependency);
+    }
+    return allDependencies;
+}
+
+var versionJson = {
+    project: parentPackage.name,
+    version: parentPackage.version,
+    build: {
+        url: process.env.BUILD_URL,
+        name: process.env.JOB_NAME,
+        number: process.env.BUILD_NUMBER,
+        buildTime: getTime(),
+        machine: os.hostname()
+    },
+    tools: {
+        git: {
+            branch: gitInfo.branch || process.env.BRANCH_NAME,
+            hash: gitInfo.sha,
+            tags: (gitInfo.tag) ? gitInfo.tag : undefined,
+            originUrl: getRepoUrl(parentPackage),
+            commitUrl: getCommitUrl(gitInfo.sha, parentPackage)
+        },
+        plugin: getBhVersionInfo(),
+        node: {
+            version: process.version
+        },
+        os: {
+            name: os.type(),
+            version: os.release()
+        }
+    },
+    dependencies: getDependencies(parentPackage)
+}
+
+try {
+    var locationToWrite = path.resolve(process.cwd(), './' + ( argv.l || '' ) + '/version.json');
+    fs.writeFileSync(locationToWrite, JSON.stringify(versionJson, null, 2));
+} catch (e) {
+    utils.error('Could not write to the version.json!\n' + e);
+}
