@@ -1,6 +1,6 @@
 {
   "name": "dev-build-release",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Simple tool to append the build number to the package.json for a development release",
   "main": "index.js",
   "preferGlobal": true,

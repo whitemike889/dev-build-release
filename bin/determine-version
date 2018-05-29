@@ -8,7 +8,7 @@ var utils = require('./utils'),
 var pkg = utils.getParentPackage();
 var currentVersion = pkg.version;
 var gitBranch = gitInfo.branch;
-var parentrepositories= argv.p;   // repositoriesthat depend on current repo
+var parentRepos = argv.p;   // repositories that depend on current repo
 var newVersion;
 
 if (!gitBranch) {
